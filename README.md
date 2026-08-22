@@ -16,7 +16,7 @@ Build an interpretable binary-classification pipeline that estimates whether an 
 - Evaluation with ROC-AUC, average precision, sensitivity, specificity, and a confusion matrix
 - Permutation feature importance for model interpretation
 - Interactive Streamlit demonstration with clear safety messaging
-- Executed Jupyter notebook ready for Colab/GitHub review
+- Colab-ready Jupyter notebook organized for clear GitHub review
 
 ## Repository structure
 
@@ -44,7 +44,7 @@ The app automatically trains the small demonstration model if the model file is 
 
 ## Notebook
 
-Open `notebooks/breast_cancer_screening.ipynb` in Google Colab or Jupyter. It is organized for assessment: objective, data audit, split strategy, model training, evaluation, explainability, limitations, and conclusion. Execute all cells before sharing so results remain visible to reviewers.
+Open `notebooks/breast_cancer_screening.ipynb` in Google Colab or Jupyter. It is organized for assessment: objective, data audit, split strategy, model training, evaluation, explainability, limitations, and conclusion. Execute all cells before sharing so generated charts and results remain visible to reviewers.
 
 ## Methodology
 
@@ -71,7 +71,7 @@ The project uses `sklearn.datasets.load_breast_cancer`, which provides the Wisco
 - [x] Original project topic selected
 - [x] Documented and reproducible notebook included
 - [x] Model training and evaluation included
-- [x] Results saved as visible notebook output
+- [x] Notebook includes clear steps to generate visible results
 - [x] GitHub-ready README and requirements included
 - [x] Shareable Colab workflow supported
 
