@@ -1,0 +1,13 @@
+feature,class,mean,sd,median,q1,q3
+mean radius,benign,12.1465,1.7805,12.2,11.08,13.37
+mean radius,malignant,17.4628,3.204,17.325,15.075,19.59
+mean texture,benign,17.9148,3.9951,17.39,15.15,19.76
+mean texture,malignant,21.6049,3.7795,21.46,19.3275,23.765
+mean concave points,benign,0.0257,0.0159,0.0234,0.015,0.0325
+mean concave points,malignant,0.088,0.0344,0.0863,0.0646,0.1032
+worst area,benign,558.8994,163.6014,547.4,447.1,670.0
+worst area,malignant,1422.2863,597.9677,1303.0,970.3,1712.75
+worst concavity,benign,0.1662,0.1404,0.1412,0.0771,0.2216
+worst concavity,malignant,0.4506,0.1815,0.4049,0.3264,0.5562
+mean smoothness,benign,0.0925,0.0134,0.0908,0.0831,0.1007
+mean smoothness,malignant,0.1029,0.0126,0.1022,0.094,0.1109

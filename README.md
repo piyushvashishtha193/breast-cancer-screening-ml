@@ -1,80 +1,100 @@
-# Breast Cancer Screening ML Demonstration
+# Breast Cancer Screening with Data Science and Machine Learning
 
-An end-to-end machine-learning project created for the **YBI Foundation 45-Day Machine Learning & Data Science Internship**.
+Project for the **YBI Foundation Data Science & Machine Learning Internship** (45 days, 8 July - 25 August 2026).
 
-> **Important:** This is an educational data-science demonstration, not a medical device. It cannot diagnose cancer, replace laboratory testing, or guide treatment. Any health concern should be reviewed by a qualified clinician.
+> Educational project. It is **not** a medical device and must not be used to diagnose or guide treatment.
 
-## Project goal
+Using the Wisconsin Diagnostic Breast Cancer (WDBC) dataset, the project covers both halves of the internship:
 
-Build an interpretable binary-classification pipeline that estimates whether an observation receives a **positive malignant-screen label** from diagnostic features. The work emphasizes a reproducible workflow: data understanding, preprocessing, stratified evaluation, sensitivity-aware metrics, explainability, and a simple interactive demo.
+- **Data science:** a data-quality audit, descriptive statistics, outlier and skewness checks, non-parametric hypothesis tests for every feature, correlation and PCA analysis.
+- **Machine learning:** four tuned classifiers compared with cross-validation, a screening threshold chosen so that malignant cases are not missed, model interpretation, and K-means clustering.
 
-## Highlights
+## Data analysis
 
-- Uses the built-in Wisconsin Diagnostic Breast Cancer dataset from scikit-learn (569 observations, 30 numeric features)
-- Clean `Pipeline` with `StandardScaler` and class-balanced `LogisticRegression`
-- Stratified train/test split for a fair class distribution
-- Evaluation with ROC-AUC, average precision, sensitivity, specificity, and a confusion matrix
-- Permutation feature importance for model interpretation
-- Interactive Streamlit demonstration with clear safety messaging
-- Colab-ready Jupyter notebook organized for clear GitHub review
+| Check | Result |
+|---|---|
+| Samples / features | 569 / 30 numeric |
+| Missing values, duplicate rows | 0, 0 |
+| Class balance | 357 benign (62.7%), 212 malignant (37.3%) |
+| Rows with at least one IQR outlier | 171 (kept - real measurements, mostly in the standard-error features) |
+| Features with skewness > 1 | 22 of 30 |
+| Features that differ between classes (Mann-Whitney U, Bonferroni) | 26 of 30 |
+| Principal components for 95% of the variance | 10 |
 
-## Repository structure
+![Effect sizes](figures/fig05_effect_sizes.png)
+
+## Model results (held-out test set, 143 samples)
+
+| Model | CV ROC-AUC (5-fold) | Test accuracy | Test sensitivity | Test specificity | Test ROC-AUC |
+|---|---|---|---|---|---|
+| **Logistic Regression** | **0.992 ± 0.007** | **0.986** | 0.962 | 1.000 | **0.998** |
+| Random Forest | 0.989 ± 0.006 | 0.972 | 0.925 | 1.000 | 0.998 |
+| KNN | 0.988 ± 0.006 | 0.958 | 0.906 | 0.989 | 0.986 |
+| Decision Tree | 0.954 ± 0.023 | 0.923 | 0.868 | 0.956 | 0.929 |
+
+All at the default 0.50 threshold. Hyper-parameters were tuned with `GridSearchCV` on the training set.
+
+**Screening threshold.** At 0.50, logistic regression misses 2 of 53 malignant test cases. A threshold of **0.19** was chosen on out-of-fold training predictions (target: sensitivity ≥ 98%). On the test set this gives:
+
+| Threshold | Sensitivity | Specificity | Missed malignant | Benign flagged |
+|---|---|---|---|---|
+| 0.50 | 0.962 | 1.000 | 2 | 0 |
+| 0.19 | **1.000** | 0.911 | **0** | 8 |
+
+**K-means (unsupervised).** With k = 2 and no labels, the clusters agree with the diagnosis for 90.5% of samples (ARI 0.65).
+
+![ROC and PR curves](figures/fig08_roc_pr_curves.png)
+![Confusion matrices](figures/fig11_confusion_matrices.png)
+
+## Method
+
+1. Load WDBC from scikit-learn (569 samples, 30 features) and recode the target so 1 = malignant.
+2. Audit data quality and test each feature with the Mann-Whitney U test (Bonferroni-corrected).
+3. Stratified 75/25 train/test split, seed 42. The test set is used once, at the end.
+4. Each model is a `Pipeline` (scaler + classifier), so scaling never sees validation or test data.
+5. Grid search with 5-fold stratified CV, scored on ROC-AUC. Model chosen by mean CV ROC-AUC.
+6. Threshold picked from out-of-fold probabilities on the training set.
+7. Permutation importance and a calibration curve for interpretation.
+8. K-means + PCA as an unsupervised check of the data structure.
+
+## Repository
 
 ```text
-├── app.py                         # Interactive Streamlit demonstration
+├── app.py                      Streamlit app: screening demo + data explorer
 ├── notebooks/
-│   └── breast_cancer_screening.ipynb
+│   └── breast_cancer_screening.ipynb   full walkthrough with outputs
 ├── src/
-│   └── train.py                   # Reproducible training and artifact creation
-├── artifacts/                     # Generated model, metrics, feature importance
-├── data/                          # Generated local feature export (ignored by Git)
-├── requirements.txt
-└── README.md
+│   ├── data.py                 loading and stratified split
+│   ├── eda.py                  data audit, descriptive statistics, hypothesis tests
+│   ├── models.py               the four pipelines and their grids
+│   ├── train.py                comparison, selection, threshold, reports
+│   ├── clustering.py           K-means + PCA
+│   └── plots.py                every figure
+├── figures/                    15 PNG charts (analysis and model results)
+├── reports/                    data_audit.json, statistical_tests.csv, metrics.json, ...
+└── tests/test_pipeline.py
 ```
 
-## Run locally
+## Run it
 
 ```bash
-python -m pip install -r requirements.txt
-python src/train.py
+pip install -r requirements.txt
+python -m src.train        # ~40 s: analysis + training, writes reports/ and figures/
 streamlit run app.py
+python -m pytest -q
 ```
 
-The app automatically trains the small demonstration model if the model file is not present.
+## Limitations
 
-## Notebook
+- 569 samples from a single centre in the early 1990s; features were measured from digitised images by hand-guided software.
+- High scores here do not transfer automatically to other hospitals, scanners or populations.
+- The 0.19 threshold reflects one choice of trade-off (missed cancer ≫ extra follow-up). Real use would need clinicians to set that cost, plus external validation, calibration on local data and bias checks.
 
-Open `notebooks/breast_cancer_screening.ipynb` in Google Colab or Jupyter. It is organized for assessment: objective, data audit, split strategy, model training, evaluation, explainability, limitations, and conclusion. Execute all cells before sharing so generated charts and results remain visible to reviewers.
+## Data
 
-## Methodology
-
-1. Load the scikit-learn dataset and recode the target so `1` means a malignant (positive) screen.
-2. Reserve a stratified 25% test set before fitting any preprocessing.
-3. Standardize features inside a pipeline to avoid train/test leakage.
-4. Fit a class-balanced logistic-regression classifier.
-5. Evaluate discrimination and screening-relevant error patterns rather than accuracy alone.
-6. Rank the most influential measurements using permutation importance.
-
-## Limitations and ethical notes
-
-- The source dataset is small and may not represent current clinical populations, devices, or local demographics.
-- Labels and features are historical research data, not a substitute for real clinical workflows.
-- A probability is not a diagnosis, and a threshold encodes a trade-off between false positives and false negatives.
-- Clinical use would require external validation, calibration, bias evaluation, governance, privacy safeguards, and regulatory review.
-
-## Dataset attribution
-
-The project uses `sklearn.datasets.load_breast_cancer`, which provides the Wisconsin Diagnostic Breast Cancer dataset. Dataset details and citations are available in the [scikit-learn documentation](https://scikit-learn.org/stable/datasets/toy_dataset.html#breast-cancer-dataset).
-
-## Internship submission checklist
-
-- [x] Original project topic selected
-- [x] Documented and reproducible notebook included
-- [x] Model training and evaluation included
-- [x] Notebook includes clear steps to generate visible results
-- [x] GitHub-ready README and requirements included
-- [x] Shareable Colab workflow supported
+`sklearn.datasets.load_breast_cancer` - Wolberg, Street & Mangasarian, UCI Machine Learning Repository.
 
 ## Author
 
-Piyush Vashishtha
+Piyush Vashishtha · B.Tech Bioinformatics, Amity University Rajasthan
+[GitHub](https://github.com/piyushvashishtha193) · [LinkedIn](https://www.linkedin.com/in/piyushvashishtha)

@@ -3,7 +3,7 @@ __pycache__/
 .venv/
 .env
 .streamlit/secrets.toml
-artifacts/*.joblib
-artifacts/*.json
-data/*.csv
+artifacts/
+data/
 .ipynb_checkpoints/
+.pytest_cache/

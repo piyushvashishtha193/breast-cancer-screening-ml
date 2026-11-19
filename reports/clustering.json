@@ -1,0 +1,20 @@
+{
+  "best_silhouette_k": 2,
+  "silhouette_k2": 0.3434,
+  "adjusted_rand_index_k2": 0.6536,
+  "cluster_label_agreement_k2": 0.9051,
+  "pca_explained_variance": [
+    0.4427,
+    0.1897
+  ],
+  "crosstab": {
+    "0": {
+      "0": 339,
+      "1": 36
+    },
+    "1": {
+      "0": 18,
+      "1": 176
+    }
+  }
+}

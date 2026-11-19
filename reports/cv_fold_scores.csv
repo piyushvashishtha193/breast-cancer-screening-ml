@@ -1,0 +1,21 @@
+model,fold,roc_auc
+Logistic Regression,1,1.0
+Logistic Regression,2,0.9833
+Logistic Regression,3,0.9929
+Logistic Regression,4,0.9847
+Logistic Regression,5,0.9994
+KNN,1,0.9907
+KNN,2,0.9782
+KNN,3,0.9894
+KNN,4,0.9894
+KNN,5,0.9947
+Decision Tree,1,0.9878
+Decision Tree,2,0.94
+Decision Tree,3,0.9248
+Decision Tree,4,0.9443
+Decision Tree,5,0.9708
+Random Forest,1,0.9994
+Random Forest,2,0.9881
+Random Forest,3,0.9829
+Random Forest,4,0.9835
+Random Forest,5,0.9929
